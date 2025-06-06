@@ -67,6 +67,12 @@ app.post('/create-checkout-session', async (req, res) => {
     }
 });
 
+app.get('/success', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'success.html'));
+});
+app.get('/cancel', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'cancel.html'));
+});
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
