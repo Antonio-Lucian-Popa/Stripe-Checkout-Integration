@@ -33,9 +33,10 @@ app.post('/create-checkout-session', async (req, res) => {
     const { items } = req.body;
 
     try {
+        // Aici se creeaza sesiunea de checkout cu Stripe
         const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            line_items: items.map(item => {
+            payment_method_types: ['card'], // ce fel de plata accepta
+            line_items: items.map(item => { // pentru fiecare produs din items, se creeaza un obiect cu datele necesare
                 const storedItem = storedItems.find(i => i.id === item.id);
                 if (!storedItem) {
                     throw new Error(`Item with id ${item.id} not found`);
@@ -52,12 +53,14 @@ app.post('/create-checkout-session', async (req, res) => {
                     quantity: item.quantity,
                 };
             }),
-            mode: 'payment',
+            mode: 'payment', // modalitatea de plata(poate fii si subscription)
+            // URL-urile la care se va redirectiona utilizatorul dupa ce a facut plata
             success_url: `${req.headers.origin}/success`,
+            // URL-urile la care se va redirectiona utilizatorul daca a anulat plata
             cancel_url: `${req.headers.origin}/cancel`,
         });
         console.log('Checkout Session Created:', session);
-        res.json({ url: session.url });
+        res.json({ url: session.url }); // trimite URL-ul de checkout catre client
     } catch (error) {
         console.error('Error creating checkout session:', error);
         res.status(500).json({ error: 'Internal Server Error' });
